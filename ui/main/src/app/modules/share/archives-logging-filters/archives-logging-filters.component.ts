@@ -8,20 +8,20 @@
  */
 
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {ConfigService} from "@ofServices/config.service";
-import {Card} from "@ofModel/card.model";
-import {LightCard} from "@ofModel/light-card.model";
-import {FormGroup} from "@angular/forms";
-import {ProcessesService} from "@ofServices/processes.service";
-import {takeUntil} from "rxjs/operators";
-import {Observable, Subject} from "rxjs";
-import {buildSettingsOrConfigSelector} from "@ofSelectors/settings.x.config.selectors";
-import {Store} from "@ngrx/store";
-import {AppState} from "@ofStore/index";
-import {TranslateService} from "@ngx-translate/core";
-import {TimeService} from "@ofServices/time.service";
-import {NgbDateStruct, NgbTimeStruct} from "@ng-bootstrap/ng-bootstrap";
-import {DateTimeNgb} from "@ofModel/datetime-ngb.model";
+import {ConfigService} from '@ofServices/config.service';
+import {Card} from '@ofModel/card.model';
+import {LightCard} from '@ofModel/light-card.model';
+import {FormGroup} from '@angular/forms';
+import {ProcessesService} from '@ofServices/processes.service';
+import {takeUntil} from 'rxjs/operators';
+import {Observable, Subject} from 'rxjs';
+import {buildSettingsOrConfigSelector} from '@ofSelectors/settings.x.config.selectors';
+import {Store} from '@ngrx/store';
+import {AppState} from '@ofStore/index';
+import {TranslateService} from '@ngx-translate/core';
+import {TimeService} from '@ofServices/time.service';
+import {NgbDateStruct, NgbTimeStruct} from '@ng-bootstrap/ng-bootstrap';
+import {DateTimeNgb} from '@ofModel/datetime-ngb.model';
 
 export enum FilterDateTypes {
     PUBLISH_DATE_FROM_PARAM = 'publishDateFrom',
@@ -55,6 +55,7 @@ export class ArchivesLoggingFiltersComponent implements OnInit, OnDestroy {
 
     tags: any[];
     filters;
+    isErrorInDateFormat = false;
 
     // Filter values
     processesDropdownListPerProcessGroups = new Map();
@@ -103,30 +104,30 @@ export class ArchivesLoggingFiltersComponent implements OnInit, OnDestroy {
 
         this.getLocale().pipe(takeUntil(this.unsubscribe$)).subscribe(locale => {
             this.translate.use(locale);
-            this.translate.get(['filters.selectProcessGroupText','filters.selectProcessText','filters.selectStateText',
+            this.translate.get(['filters.selectProcessGroupText', 'filters.selectProcessText', 'filters.selectStateText',
                 'filters.selectTagText'])
                 .subscribe(translations => {
                     this.processGroupDropdownSettings = {
                         text: translations['filters.selectProcessGroupText'],
                         badgeShowLimit: 1,
                         enableSearchFilter: true
-                    }
+                    };
                     this.processDropdownSettings = {
                         text: translations['filters.selectProcessText'],
                         badgeShowLimit: 1,
                         enableSearchFilter: true
-                    }
+                    };
                     this.stateDropdownSettings = {
                         text: translations['filters.selectStateText'],
                         badgeShowLimit: 1,
                         enableSearchFilter: true
-                    }
+                    };
                     this.tagsDropdownSettings = {
                         text: translations['filters.selectTagText'],
                         badgeShowLimit: 1,
                         enableSearchFilter: true
                     };
-                })
+                });
         });
 
         this.changeProcessesWhenSelectProcessGroup();
@@ -139,7 +140,7 @@ export class ArchivesLoggingFiltersComponent implements OnInit, OnDestroy {
         this.processesWithoutProcessGroupDropdownList = this.processesService.getProcessesWithoutProcessGroup();
 
         if (this.processesWithoutProcessGroupDropdownList.length > 0)
-            this.processGroupDropdownList.push({ id: '--', itemName: "processGroup.defaultLabel" });
+            this.processGroupDropdownList.push({ id: '--', itemName: 'processGroup.defaultLabel' });
 
         const processGroups = Array.from(this.processesDropdownListPerProcessGroups.keys());
         processGroups.forEach(processGroup => this.processGroupDropdownList.push({ id: processGroup, itemName: processGroup }));
@@ -148,15 +149,18 @@ export class ArchivesLoggingFiltersComponent implements OnInit, OnDestroy {
     /**
      * Transforms the filters list to Map
      */
-    filtersToMap = (filters: any) : void => {
+    filtersToMap = (filters: any): void => {
+        this.isErrorInDateFormat = false;
+
         this.filters = new Map();
         Object.keys(filters).forEach(key => {
             const element = filters[key];
             // if the form element is date
             if (element) {
-                if (checkElement(FilterDateTypes, key))
-                    this.dateFilterToMap(key, element);
-                else {
+                if (checkElement(FilterDateTypes, key)) {
+                    if (! this.dateFilterToMap(key, element))
+                        this.isErrorInDateFormat = true;
+                } else {
                     if (element.length) {
                         const ids = [];
                         if (key == 'state')
@@ -173,13 +177,16 @@ export class ArchivesLoggingFiltersComponent implements OnInit, OnDestroy {
         });
     }
 
-    dateFilterToMap(key: string, element: any) {
+    dateFilterToMap(key: string, element: any): boolean {
         const { date, time } = element;
         if (date) {
             const timeStamp = this.timeService.toNgBTimestamp(transformToTimestamp(date, time));
             if (timeStamp !== 'NaN')
                 this.filters.set(key, [timeStamp]);
+            else
+                return false;
         }
+        return true;
     }
 
     stateFilterToMap(element: any) {
@@ -193,9 +200,9 @@ export class ArchivesLoggingFiltersComponent implements OnInit, OnDestroy {
 
         element.forEach(processGroup => {
             if (processGroup.id == '--')
-                this.processesWithoutProcessGroupDropdownList.forEach(process => ids.push(process.id))
+                this.processesWithoutProcessGroupDropdownList.forEach(process => ids.push(process.id));
             else
-                this.processesDropdownListPerProcessGroups.get(processGroup.id).forEach(process => ids.push(process.id))
+                this.processesDropdownListPerProcessGroups.get(processGroup.id).forEach(process => ids.push(process.id));
         });
 
         if (!this.filters.get('process'))
@@ -224,8 +231,7 @@ export class ArchivesLoggingFiltersComponent implements OnInit, OnDestroy {
                     else
                         this.addProcessesDropdownList(this.processesDropdownListPerProcessGroups.get(processGroup.id));
                 });
-            }
-            else
+            } else
                 this.processDropdownListWhenSelectedProcessGroup = [];
         });
     }
@@ -238,8 +244,7 @@ export class ArchivesLoggingFiltersComponent implements OnInit, OnDestroy {
                 selectedProcesses.forEach(process =>
                     this.addStatesDropdownList(this.statesDropdownListPerProcesses.get(process.id))
                 );
-            }
-            else
+            } else
                 this.stateDropdownListWhenSelectedProcess = [];
         });
     }
@@ -247,8 +252,8 @@ export class ArchivesLoggingFiltersComponent implements OnInit, OnDestroy {
     loadAllStatesPerProcesses(): void {
         this.processesService.getAllProcesses().forEach(process => {
 
-            let statesDropdownList = [];
-            for (let state in process.states)
+            const statesDropdownList = [];
+            for (const state in process.states)
                 statesDropdownList.push({id: process.id + '.' + state, itemName: process.states[state].name, i18nPrefix: `${process.id}.${process.version}`});
             this.statesDropdownListPerProcesses.set(process.id, statesDropdownList);
         });

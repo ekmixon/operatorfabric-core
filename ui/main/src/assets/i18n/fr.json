@@ -145,7 +145,8 @@
     },
     "noResult": "Votre recherche ne correspond à aucun résultat.",
     "exportToExcel" : "Exporter les données",
-    "resultsNumber":"Nombre de résultats"
+    "resultsNumber":"Nombre de résultats",
+    "errorInDateFormat": "Erreur : Format de date incorrect"
   },
   "logging": {
     "filters": {
