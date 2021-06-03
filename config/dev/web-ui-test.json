@@ -115,14 +115,9 @@
     "infos": {
       "description": true
     },
-    "locale": "en",
-    "nightDayMode": false
+    "locale": "en"
   },
   "navbar": {
-    "hidden": [],
     "businessmenus" : {"type":"IFRAME"}
-  },
-  "feedConfiguration": {
-    "hidden": false
   }
 }

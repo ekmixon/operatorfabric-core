@@ -127,17 +127,9 @@
     "locale": "en",
     "dateTimeFormat": "HH:mm DD/MM/YYYY",
     "dateFormat": "DD/MM/YYYY",
-    "nightDayMode": true,
     "styleWhenNightDayModeDesactivated" : "NIGHT"
   },
   "navbar": {
-    "hidden": [],
     "businessmenus" : {"type":"BOTH"}
-  },
-  "admin": {
-    "hidden": false
-  },
-  "feedConfiguration": {
-    "hidden": false
   }
 }

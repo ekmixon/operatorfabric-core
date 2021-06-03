@@ -1,4 +1,62 @@
 {
+  "coreMenusConfiguration":
+  [
+    {
+      "id": "feed",
+      "visible": true
+    },
+    {
+      "id": "archives",
+      "visible": true
+    },
+    {
+      "id": "monitoring",
+      "visible": false
+    },
+    {
+      "id": "logging",
+      "visible": false
+    },
+    {
+      "id": "usercard",
+      "visible": false
+    },
+    {
+      "id": "calendar",
+      "visible": true
+    },
+    {
+      "id": "admin",
+      "visible": true,
+      "showOnlyForGroups": ["ADMIN"]
+    },
+    {
+      "id": "settings",
+      "visible": true
+    },
+    {
+      "id": "feedconfiguration",
+      "visible": true
+    },
+    {
+      "id": "realtimeusers",
+      "visible": true,
+      "showOnlyForGroups": ["ADMIN"]
+    },
+    {
+      "id": "nightdaymode",
+      "visible": false
+    },
+    {
+      "id": "about",
+      "visible": true,
+      "showOnlyForGroups": ["ADMIN"]
+    },
+    {
+      "id": "logout",
+      "visible": true
+    }
+  ],
   "menus": [
     {
       "id": "menu1",
