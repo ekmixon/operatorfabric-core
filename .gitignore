@@ -126,8 +126,8 @@ ui/main/report.html
 config/docker/businessconfig-storage/**
 
 # Web UI config
-config/cypress/ui-config/**
-config/dev/ui-config/**
+#config/cypress/ui-config/**
+#config/dev/ui-config/**
 
 # now script generated
 config/dev/nginx.conf
