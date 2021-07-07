@@ -26,12 +26,16 @@ export class LightCardsService {
 
     private filteredAndSortedLightCards = new Subject();
     private filteredLightCards = new Subject();
+    private foundLightCards = new Subject();
+    private foundAndSortedLightCards = new Subject();
     private loadingInProgress = new Subject();
 
     constructor(private store: Store<AppState>) {
         this.store.pipe(select(feedSelectors.selectActiveFiltersArray)).subscribe(filters => this.filters = filters);
         this.computeFilteredAndSortedLightCards();
         this.computeFilteredLightCards();
+        this.computeSearchLightCards();
+        this.computeSearchAndSortedLightCards();
         this.loadingInProgress.next(false);
     }
 
@@ -42,24 +46,26 @@ export class LightCardsService {
         ]
         ).pipe(
             map(results => {
-                function compareFn(needToSortBySeverity: boolean, needToSortByRead: boolean) {
-                    if (needToSortByRead) {
-                        if (needToSortBySeverity) {
-                            return compareByReadSeverityPublishDate;
-                        } else {
-                            return compareByReadPublishDate;
-                        }
-                    } else if (needToSortBySeverity) {
-                        return compareBySeverityPublishDate;
-                    }
-                    return compareByPublishDate;
-                }
                 return results[1]
-                    .sort(compareFn(results[0].sortBySeverity, results[0].sortByRead));
+                    .sort(this.compareFn(results[0].sortBySeverity, results[0].sortByRead));
             }
             )
         ).subscribe((lightCards) => this.filteredAndSortedLightCards.next(lightCards));
     }
+
+    compareFn(needToSortBySeverity: boolean, needToSortByRead: boolean) {
+        if (needToSortByRead) {
+            if (needToSortBySeverity) {
+                return compareByReadSeverityPublishDate;
+            } else {
+                return compareByReadPublishDate;
+            }
+        } else if (needToSortBySeverity) {
+            return compareBySeverityPublishDate;
+        }
+        return compareByPublishDate;
+    }
+
     public getFilteredLightCards(): Observable<any> {
         return this.filteredLightCards.asObservable();
     }
@@ -75,6 +81,33 @@ export class LightCardsService {
                 return this.filterLightCards(results[1], results[0]);
             })
         ).subscribe((lightCards) => this.filteredLightCards.next(lightCards));
+    }
+
+    private computeSearchAndSortedLightCards() {
+        combineLatest([
+            this.store.pipe(select(feedSelectors.selectSortFilter)),
+            this.getFoundLightCards()
+        ]
+        ).pipe(
+            map(results => {
+                return results[1]
+                    .sort(this.compareFn(results[0].sortBySeverity, results[0].sortByRead));
+            }
+            )
+        ).subscribe((lightCards) => this.foundAndSortedLightCards.next(lightCards));
+    }
+
+    private computeSearchLightCards() {
+        combineLatest([
+            this.store.pipe(select(feedSelectors.selectActiveSearchFiltersArray)),
+            this.getLightCards()
+        ]
+        ).pipe(
+            map(results => {
+                console.log(new Date().toISOString(), "Number of card found ", results[1].length, " cards");
+                return this.filterLightCards(results[1], results[0]);
+            })
+        ).subscribe((lightCards) => this.foundLightCards.next(lightCards));
     }
 
  // --------------------
@@ -127,6 +160,15 @@ export class LightCardsService {
     public getFilteredAndSortedLightCards(): Observable<any> {
         return this.filteredAndSortedLightCards.asObservable();
     }
+
+    public getFoundLightCards(): Observable<any> {
+        return this.foundLightCards.asObservable();
+    }
+
+    public getFoundAndSortedLightCards(): Observable<any> {
+        return this.foundAndSortedLightCards.asObservable();
+    }
+
 }
 
 export function severityOrdinal(severity: Severity) {

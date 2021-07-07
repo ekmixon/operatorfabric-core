@@ -18,6 +18,7 @@ export interface CardFeedState extends EntityState<LightCard> {
     selectedCardId: string;
     lastCardLoaded: LightCard;
     filters: Map<FilterType, Filter>;
+    searchFilters: Map<FilterType, Filter>;
     sortBySeverity: boolean;
     sortByRead: boolean;
 }
@@ -39,11 +40,17 @@ function getDefaultFilter() {
     return filterService.defaultFilters();
 }
 
+function getDefaultSearchFilter() {
+    const filterService = new FilterService();
+    return filterService.defaultFiltersForMonitoring();
+}
+
 export const feedInitialState: CardFeedState = LightCardAdapter.getInitialState(
     {
         selectedCardId: null,
         lastCardLoaded: null,
         filters: getDefaultFilter(),
+        searchFilters: getDefaultSearchFilter(),
         sortBySeverity: false,
         sortByRead: true
     });

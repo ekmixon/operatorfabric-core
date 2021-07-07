@@ -56,7 +56,7 @@ export class MonitoringComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.monitoringResult$ = this.lightCardsService.getFilteredAndSortedLightCards().pipe(
+        this.monitoringResult$ = this.lightCardsService.getFoundAndSortedLightCards().pipe(
             takeUntil(this.unsubscribe$),
             map((cards: LightCard[]) => {
                     if (!!cards && cards.length <= 0) {

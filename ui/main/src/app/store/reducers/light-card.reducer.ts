@@ -103,6 +103,20 @@ export function reducer(
                 return {...state};
             }
         }
+        case FeedActionTypes.ApplySearchFilter: {
+            const payload = action.payload;
+            if (state.searchFilters.get(payload.name)) {
+                const filters = new Map(state.searchFilters);
+                const filter = changeActivationAndStatusOfFilter(filters, payload);
+                filters.set(payload.name, filter);
+                return {
+                    ...state,
+                    searchFilters: filters
+                };
+            } else {
+                return {...state};
+            }
+        }
         case FeedActionTypes.ChangeSort: {
             return {
                 ...state,
@@ -158,6 +172,14 @@ export function reducer(
             return {
                 ...state,
                 filters: filterStatuses
+            };
+        }
+        case FeedActionTypes.ApplySeveralSearchFilters: {
+            const filterStatuses = action.payload.filterStatuses;
+
+            return {
+                ...state,
+                searchFilters: filterStatuses
             };
         }
         default: {

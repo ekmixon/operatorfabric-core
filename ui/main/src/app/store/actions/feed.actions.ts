@@ -15,10 +15,12 @@ import {Filter} from '@ofModel/feed-filter.model';
 
 export enum FeedActionTypes {
     ApplyFilter = '[Feed] Change filter Status',
+    ApplySearchFilter = '[Feed] Change search filter Status',
     ChangeSort = '[Feed] Change sort order',
     ResetFilter = '[Feed] Reset filter Status',
     ResetFilterForMonitoring = '[Feed] Reset filter Status for monitoring screen',
     ApplySeveralFilters = '[Feed] Change several filters Status at Once',
+    ApplySeveralSearchFilters  = '[Feed] Change several search filters Status at Once',
     ChangeReadSort = '[Feed] Sort by read'
 }
 
@@ -28,6 +30,11 @@ export class ApplyFilter implements Action {
     }
 }
 
+export class ApplySearchFilter implements Action {
+    readonly type = FeedActionTypes.ApplySearchFilter;
+    constructor(public payload: { name: FilterType, active: boolean, status: any }) {
+    }
+}
 export class ChangeSort implements Action {
     readonly type = FeedActionTypes.ChangeSort;
 }
@@ -49,10 +56,19 @@ export class ApplySeveralFilters implements Action {
     constructor(public payload: {filterStatuses: Map<FilterType, Filter>}) {
     }
 }
+
+export class ApplySeveralSearchFilters implements Action {
+    readonly type = FeedActionTypes.ApplySeveralSearchFilters;
+    constructor(public payload: {filterStatuses: Map<FilterType, Filter>}) {
+    }
+}
+
 export type FeedActions =
     ApplyFilter
+    | ApplySearchFilter
     | ChangeSort
     | ChangeReadSort
     | ResetFilter
     | ResetFilterForMonitoring
-    | ApplySeveralFilters;
+    | ApplySeveralFilters
+    | ApplySeveralSearchFilters;

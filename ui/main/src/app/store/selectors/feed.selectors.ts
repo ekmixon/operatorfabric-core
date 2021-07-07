@@ -29,10 +29,25 @@ export const selectLastCardLoaded = createSelector(selectLightCardsState,
 export const selectFilter = createSelector(selectLightCardsState,
     state => state.filters);
 
+
+export const searchFilter = createSelector(selectLightCardsState,
+    state => state.searchFilters);
+
 export const selectActiveFiltersArray = createSelector(selectFilter,
     (filters) => {
         const result = [];
         for (const v of filters.values()) {
+            if (v.active) {
+                result.push(v);
+            }
+        }
+        return result;
+    });
+    
+export const selectActiveSearchFiltersArray = createSelector(searchFilter,
+    (searchFilters) => {
+        const result = [];
+        for (const v of searchFilters.values()) {
             if (v.active) {
                 result.push(v);
             }

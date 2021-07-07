@@ -20,6 +20,7 @@ import {FilterService, FilterType} from '@ofServices/filter.service';
 import {
     ApplyFilter,
     ApplySeveralFilters,
+    ApplySeveralSearchFilters,
     FeedActionTypes,
     ResetFilter,
     ResetFilterForMonitoring
@@ -68,6 +69,6 @@ export class FeedFiltersEffects {
     resetFeedFilterForMonitoring: Observable<Action> = createEffect(() => this.actions$
         .pipe(
             ofType<ResetFilterForMonitoring>(FeedActionTypes.ResetFilterForMonitoring),
-            map(() => new ApplySeveralFilters({filterStatuses: this.service.defaultFiltersForMonitoring()}))
+            map(() => new ApplySeveralSearchFilters({filterStatuses: this.service.defaultFiltersForMonitoring()}))
         ));
 }

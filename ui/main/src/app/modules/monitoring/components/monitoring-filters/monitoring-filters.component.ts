@@ -12,7 +12,7 @@ import {AbstractControl, FormControl, FormGroup} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {AppState} from '@ofStore/index';
 import {FilterType} from '@ofServices/filter.service';
-import {ApplyFilter, ResetFilter, ResetFilterForMonitoring} from '@ofActions/feed.actions';
+import {ApplySearchFilter, ResetFilter, ResetFilterForMonitoring} from '@ofActions/feed.actions';
 import {ConfigService} from '@ofServices/config.service';
 import {Observable, Subject} from 'rxjs';
 import {TranslateService} from '@ngx-translate/core';
@@ -195,7 +195,7 @@ export class MonitoringFiltersComponent implements OnInit, OnDestroy {
                 , status: null
             };
         }
-        this.store.dispatch(new ApplyFilter(procFilter));
+        this.store.dispatch(new ApplySearchFilter(procFilter));
     }
 
     filterByTypeOfStates(selectedTypeOfStates: any) {
@@ -216,7 +216,7 @@ export class MonitoringFiltersComponent implements OnInit, OnDestroy {
                 , status: null
             };
         }
-        this.store.dispatch(new ApplyFilter(typeOfStatesFilter));
+        this.store.dispatch(new ApplySearchFilter(typeOfStatesFilter));
     }
 
     public loadProcessGroupDropdownListAndProcessesDropdownList(): void {
