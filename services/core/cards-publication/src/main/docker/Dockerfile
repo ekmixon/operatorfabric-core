@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:11-jre
+FROM azul/zulu-openjdk-alpine:11.0.20-11.66.15
 VOLUME /tmp
 ARG JAR_FILE
 ARG http_proxy
